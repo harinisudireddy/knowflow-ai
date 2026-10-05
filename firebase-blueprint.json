@@ -1,0 +1,197 @@
+{
+  "entities": {
+    "profiles": {
+      "title": "UserProfile",
+      "description": "User accounts and authentication credentials",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "email"]
+    },
+    "workspaces": {
+      "title": "Workspace",
+      "description": "Multi-tenant organization boundary isolating assistants and documents",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "slug": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "plan": { "type": "string" },
+        "memberCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "ownerId"]
+    },
+    "workspace_members": {
+      "title": "WorkspaceMember",
+      "description": "Memberships and roles within an organization workspace",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "workspaceId": { "type": "string" },
+        "userId": { "type": "string" },
+        "role": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "workspaceId", "userId", "role"]
+    },
+    "bots": {
+      "title": "Bot",
+      "description": "AI Knowledge Assistants configured with instructions, theme, and greetings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "workspace_id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "instructions": { "type": "string" },
+        "greeting": { "type": "string" },
+        "placeholder": { "type": "string" },
+        "avatar": { "type": "string" },
+        "theme": { "type": "string" },
+        "status": { "type": "string", "enum": ["Ready", "Draft", "Indexing", "Paused"] },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "workspace_id", "name", "status"]
+    },
+    "sources": {
+      "title": "Source",
+      "description": "Approved knowledge source documents uploaded for an assistant",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "bot_id": { "type": "string" },
+        "workspace_id": { "type": "string" },
+        "filename": { "type": "string" },
+        "storage_path": { "type": "string" },
+        "file_type": { "type": "string" },
+        "status": { "type": "string", "enum": ["Processing", "Ready", "Failed"] },
+        "page_count": { "type": "number" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "bot_id", "filename", "status"]
+    },
+    "chunks": {
+      "title": "Chunk",
+      "description": "Text chunks with page metadata and vector embeddings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "bot_id": { "type": "string" },
+        "source_id": { "type": "string" },
+        "content": { "type": "string" },
+        "page_number": { "type": "number" },
+        "chunk_index": { "type": "number" },
+        "embedding": { "type": "array" },
+        "metadata": { "type": "object" }
+      },
+      "required": ["id", "bot_id", "source_id", "content", "page_number"]
+    },
+    "conversations": {
+      "title": "Conversation",
+      "description": "Conversation threads between visitors and assistants",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "bot_id": { "type": "string" },
+        "session_id": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "bot_id"]
+    },
+    "messages": {
+      "title": "Message",
+      "description": "Dialogue messages with grounded citations and latency",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "conversation_id": { "type": "string" },
+        "bot_id": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "assistant", "system"] },
+        "content": { "type": "string" },
+        "latency_ms": { "type": "number" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "conversation_id", "bot_id", "role", "content"]
+    },
+    "citations": {
+      "title": "Citation",
+      "description": "Source citation link pointing to specific chunk and page",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "message_id": { "type": "string" },
+        "chunk_id": { "type": "string" },
+        "documentName": { "type": "string" },
+        "page": { "type": "number" },
+        "similarity": { "type": "number" },
+        "rank": { "type": "number" }
+      },
+      "required": ["id", "message_id", "chunk_id"]
+    },
+    "feedback": {
+      "title": "Feedback",
+      "description": "User ratings and quality comments on assistant responses",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "bot_id": { "type": "string" },
+        "message_id": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "bot_id", "message_id", "rating"]
+    }
+  },
+  "firestore": {
+    "/profiles/{userId}": {
+      "schema": "profiles",
+      "description": "Stores user profile and credentials"
+    },
+    "/workspaces/{workspaceId}": {
+      "schema": "workspaces",
+      "description": "Stores organization workspace settings"
+    },
+    "/workspace_members/{memberId}": {
+      "schema": "workspace_members",
+      "description": "Stores workspace membership roles"
+    },
+    "/bots/{botId}": {
+      "schema": "bots",
+      "description": "Stores knowledge assistant configurations"
+    },
+    "/sources/{sourceId}": {
+      "schema": "sources",
+      "description": "Stores knowledge source files metadata"
+    },
+    "/chunks/{chunkId}": {
+      "schema": "chunks",
+      "description": "Stores semantic text chunks and vector embeddings"
+    },
+    "/conversations/{conversationId}": {
+      "schema": "conversations",
+      "description": "Stores session conversations"
+    },
+    "/messages/{messageId}": {
+      "schema": "messages",
+      "description": "Stores chat messages and latency"
+    },
+    "/citations/{citationId}": {
+      "schema": "citations",
+      "description": "Stores ground truth source citations"
+    },
+    "/feedback/{feedbackId}": {
+      "schema": "feedback",
+      "description": "Stores thumbs up/down and user comments"
+    }
+  }
+}

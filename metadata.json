@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix KnowFlow AI",
+  "description": "Enterprise multi-tenant AI Knowledge Assistant platform for organizations to create, train, test, and deploy source-grounded chatbots.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
